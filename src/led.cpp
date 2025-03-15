@@ -14,6 +14,7 @@ LED::LED(const uint led_pin_param, const uint delay_param, const char *led_name_
 void LED::enable() {
     printf("%s ENABLED\n", led_name);
     enabled = true;
+    led_on();
 }   
 
 void LED::disable() {

@@ -68,6 +68,7 @@ void LED_handler::initialize_uart1() {
 
 void LED_handler::process_command() {
     // Process command
+    // TODO multiple commands simultaneously
     for(LED& led : leds) {
         if(read_buffer.find(led.led_get_name()) != std::string::npos) {
             if(read_buffer.find("ENABLE") != std::string::npos) {
