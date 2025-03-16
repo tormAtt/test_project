@@ -14,6 +14,7 @@ LED_handler::LED_handler(const uint uart_id_param, const uint baud_rate_param):
         printf("Invalid UART ID %i\n", uart_id);
 
     pos = 0;
+    str_received = false;
 
     // Populate vector with LED objects
     leds.push_back(LED(20, 500, "LED 1"));
@@ -21,18 +22,21 @@ LED_handler::LED_handler(const uint uart_id_param, const uint baud_rate_param):
     leds.push_back(LED(22, 500, "LED 3"));
 }
 
-void LED_handler::read_uart() {
+void LED_handler::read_handler() {
     // Read UART
-    switch (uart_id) {
-    case 0:
-        uart_read_debugger();
-        break;
-    case 1:
-        uart_read_lora();
-        break;
-    default:
-        printf("Invalid UART ID %i\n", uart_id);
-        break;
+    read_uart();
+
+    if(str_received) {
+        // String received
+        printf("Received: %s\n", read_buffer.c_str());
+
+        // Process string TODO
+        if(!read_buffer.empty()) {
+            process_command();
+        }
+
+        // Reset buffer
+        reset_buffer();
     }
 }
 
@@ -55,6 +59,7 @@ void LED_handler::initialize_uart1() {
     uart_init(uart, baud_rate);
     gpio_set_function(4, GPIO_FUNC_UART);
     gpio_set_function(5, GPIO_FUNC_UART);
+    join_lora();
 }
 
 void LED_handler::process_command() {
@@ -76,24 +81,15 @@ void LED_handler::reset_buffer() {
     // Reset buffer
     read_buffer = std::string();
     pos = 0;
+    str_received = false;
 }
 
-void LED_handler::uart_read_debugger() {
+void LED_handler::read_uart() {
     while(uart_is_readable(uart)) {
         char c = uart_getc(uart);
         if(c == '\n' || c == '\r') {
             read_buffer += c;
-
-            // String received
-            printf("Received: %s\n", read_buffer.c_str());
-
-            // Process string TODO
-            if(!read_buffer.empty()) {
-                process_command();
-            }
-
-            // Reset buffer
-            reset_buffer();
+            str_received = true;
         } else {
             // Append character to buffer
             read_buffer += c;
@@ -101,6 +97,28 @@ void LED_handler::uart_read_debugger() {
     }
 }
 
-void LED_handler::uart_read_lora() {
+void LED_handler::join_lora() {
+    uint8_t join_commands[1][80] = {
+        //"AT+MODE=LWOTAA\r\n",
+        "AT"
+        /*"+KEY=APPKEY,<appkey>\r\n",
+        "+CLASS=A\r\n",
+        "+PORT=8\r\n",
+        "+JOIN\r\n"*/
+    };
 
+    for(const uint8_t *command : join_commands) {
+        while(!uart_is_writable(uart)) sleep_ms(10);
+
+        // Send join command to LoRaWAN network
+        printf("Sending command: %s\n", command);
+        uart_write_blocking(uart, command, strlen((const char*) command));
+
+        // Read response from LoRaWAN network
+        /*read_uart();
+        if(read_buffer == "+JOIN: Join\r\n") {
+            printf("Wait for successful join to LoRaWAN network\n");
+
+        }*/
+    }
 }
