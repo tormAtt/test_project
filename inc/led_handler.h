@@ -14,6 +14,7 @@ public:
     void blink_leds();
 private:
     // Member variables
+    const uint uart_id;
     const uint baud_rate;
     uart_inst_t *uart;
     std::vector<LED> leds;
@@ -25,4 +26,6 @@ private:
     void initialize_uart1();
     void process_command();
     void reset_buffer();
+    void uart_read_debugger();
+    void uart_read_lora();
 };

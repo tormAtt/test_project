@@ -1,7 +1,7 @@
 #include "led_handler.h"
 
-LED_handler::LED_handler(const uint uart_id, const uint baud_rate_param):
-    baud_rate(baud_rate_param)
+LED_handler::LED_handler(const uint uart_id_param, const uint baud_rate_param):
+    uart_id(uart_id_param), baud_rate(baud_rate_param)
 {
     // Initialize UART
     if(uart_id == 0)
@@ -23,25 +23,16 @@ LED_handler::LED_handler(const uint uart_id, const uint baud_rate_param):
 
 void LED_handler::read_uart() {
     // Read UART
-    while(uart_is_readable(uart)) {
-        char c = uart_getc(uart);
-        if(c == '\n' || c == '\r') {
-            read_buffer += c;
-
-            // String received
-            printf("Received: %s\n", read_buffer.c_str());
-
-            // Process string TODO
-            if(!read_buffer.empty()) {
-                process_command();
-            }
-
-            // Reset buffer
-            reset_buffer();
-        } else {
-            // Append character to buffer
-            read_buffer += c;
-        }
+    switch (uart_id) {
+    case 0:
+        uart_read_debugger();
+        break;
+    case 1:
+        uart_read_lora();
+        break;
+    default:
+        printf("Invalid UART ID %i\n", uart_id);
+        break;
     }
 }
 
@@ -85,4 +76,31 @@ void LED_handler::reset_buffer() {
     // Reset buffer
     read_buffer = std::string();
     pos = 0;
+}
+
+void LED_handler::uart_read_debugger() {
+    while(uart_is_readable(uart)) {
+        char c = uart_getc(uart);
+        if(c == '\n' || c == '\r') {
+            read_buffer += c;
+
+            // String received
+            printf("Received: %s\n", read_buffer.c_str());
+
+            // Process string TODO
+            if(!read_buffer.empty()) {
+                process_command();
+            }
+
+            // Reset buffer
+            reset_buffer();
+        } else {
+            // Append character to buffer
+            read_buffer += c;
+        }
+    }
+}
+
+void LED_handler::uart_read_lora() {
+
 }
