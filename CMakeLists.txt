@@ -34,7 +34,7 @@ project(test_project C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-FILE(GLOB sources src/*.cpp)
+FILE(GLOB sources src/*.cpp src/*.c)
 add_executable(test_project ${sources})
 
 pico_set_program_name(test_project "test_project")

@@ -4,19 +4,25 @@
 #include <cstring>
 #include <memory>
 
-#include "hardware/uart.h"
+//#include "hardware/uart.h"
 #include "led.h"
+
+extern "C" {
+    #include "uart.h"
+}
+
+#define BUFFER_SIZE 80
 
 class LED_handler {
 public:
-    LED_handler(uint uart_id, uint baud_rate_param);
+    LED_handler(uint uart_id_param, uint baud_rate_param);
     // Public functions
     void read_handler();
     void blink_leds();
 private:
     // UART variables
-    const uint uart_id;
     const uint baud_rate;
+    const uint uart_id;
     uart_inst_t *uart;
 
     // LED variables
@@ -33,5 +39,5 @@ private:
     void process_command();
     void reset_buffer();
     void read_uart();
-    void join_lora();
+    void join_lora_network();
 };
