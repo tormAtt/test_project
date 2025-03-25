@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
 
 class LED {
 public:
@@ -10,13 +11,21 @@ public:
     void enable();
     void disable();
     void led_toggle();
+    void set_brightness(uint brightness_percentage);
     const char *led_get_name();
 private:
-    // Member variables
+    // LED variables
     const uint led_pin;
     const uint delay;
     const char *led_name;
     bool enabled;
+
+    // PWM variables
+    const uint slice_num;
+    const uint channel_num;
+    pwm_config cfg;
+    const uint max_brihtness = 1000;
+    uint current_brightness;
 
     // Private functions
     void led_on();

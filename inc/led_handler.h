@@ -24,6 +24,7 @@ private:
     const uint baud_rate;
     const uint uart_id;
     uart_inst_t *uart;
+    void (LED_handler::*reader)();
 
     // LED variables
     std::vector<LED> leds;
@@ -31,7 +32,6 @@ private:
     // Read variables
     std::string read_buffer;
     uint pos;
-    bool str_received;
 
     // Private functions
     void initialize_uart0();
@@ -40,4 +40,6 @@ private:
     void reset_buffer();
     void read_uart();
     void join_lora_network();
+    void read_serial();
+    void read_lora();
 };
