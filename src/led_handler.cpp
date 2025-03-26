@@ -59,7 +59,8 @@ void LED_handler::process_command() {
             } else if(read_buffer.find("DISABLE") != std::string::npos) {
                 led.disable();
             } else if (read_buffer.find("BRIGHTNESS") != std::string::npos) {
-                std::string brightness = read_buffer.substr(index = read_buffer.find("BRIGHTNESS"));
+                std::string brightness = read_buffer.substr(index = read_buffer.find("BRIGHTNESS") + strlen("BRIGHTNESS"));
+                printf("Brightness before stoi(): %s\n", brightness.c_str());
                 led.set_brightness(stoi(brightness));
             }
         }
@@ -121,8 +122,8 @@ void LED_handler::read_serial() {
             // String received
             printf("Received: %s\n", read_buffer.c_str());
 
-            // Process string TODO
             if(!read_buffer.empty()) {
+                // Process string
                 process_command();
             }
 
