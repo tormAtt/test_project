@@ -18,6 +18,7 @@ LED::LED(const uint led_pin_param, const uint delay_param, const char *led_name_
 
     current_brightness = max_brihtness;
     enabled = true;
+    is_led_on = false;
 }
 
 void LED::enable() {
@@ -39,7 +40,7 @@ void LED::led_toggle() {
 
     printf("%s TOGGLED\n", led_name);
     // Toggle LED
-    if(led_state()) led_off(); else led_on();
+    if(is_led_on) led_off(); else led_on();
 
     sleep_ms(delay);
 }
@@ -64,6 +65,7 @@ void LED::led_on() {
     printf("%s TO ON\n", led_name);
     //gpio_put(led_pin, true);
     pwm_set_chan_level(slice_num, channel_num, current_brightness);
+    is_led_on = true;
     // TODO save state to eeprom
 }
 
@@ -71,9 +73,6 @@ void LED::led_off() {
     printf("%s TO OFF\n", led_name);
     //gpio_put(led_pin, false);
     pwm_set_chan_level(slice_num, channel_num, 0);
+    is_led_on = false;
     // TODO save state to eeprom
-}
-
-bool LED::led_state() {
-    return gpio_get(led_pin);
 }

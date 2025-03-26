@@ -19,6 +19,7 @@ private:
     const uint delay;
     const char *led_name;
     bool enabled;
+    bool is_led_on;
 
     // PWM variables
     const uint slice_num;
@@ -30,5 +31,4 @@ private:
     // Private functions
     void led_on();
     void led_off();
-    bool led_state();
 };
